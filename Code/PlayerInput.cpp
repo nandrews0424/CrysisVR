@@ -44,6 +44,9 @@ CPlayerInput::CPlayerInput( CPlayer * pPlayer ) :
 	m_fSuitModeActionTime(0.0f),
 	m_lastSerializeFrameID(0)
 {
+
+	m_vrInput = new VrInput();
+
 	m_pPlayer->RegisterPlayerEventListener(this);
 	m_pPlayer->GetGameObject()->CaptureActions(this);
 	m_binocularsTime = 0.0f;

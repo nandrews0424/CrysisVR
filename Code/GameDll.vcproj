@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\;..\..\..\Code\CryEngine\CryCommon;..\..\..\Code\CryEngine\CryAction"
+				AdditionalIncludeDirectories="..\Dependencies;.\;..\..\..\Code\CryEngine\CryCommon;..\..\..\Code\CryEngine\CryAction"
 				PreprocessorDefinitions="GAMEDLL_EXPORTS"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
@@ -137,7 +137,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories=".\;..\..\..\Code\CryEngine\CryCommon;..\..\..\Code\CryEngine\CryAction"
+				AdditionalIncludeDirectories="..\Dependencies;.\;..\..\..\Code\CryEngine\CryCommon;..\..\..\Code\CryEngine\CryAction"
 				PreprocessorDefinitions="GAMEDLL_EXPORTS"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -530,6 +530,14 @@
 				</File>
 				<File
 					RelativePath=".\PlayerView.h"
+					>
+				</File>
+				<File
+					RelativePath=".\VrInput.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\VrInput.h"
 					>
 				</File>
 				<File
@@ -1979,6 +1987,18 @@
 						Name="VCResourceCompilerTool"
 					/>
 				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="Libs"
+			>
+			<File
+				RelativePath="..\Dependencies\vr.io.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\Dependencies\vr_io.h"
+				>
 			</File>
 		</Filter>
 		<File

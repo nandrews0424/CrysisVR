@@ -13,6 +13,7 @@
 #include "IActionMapManager.h"
 #include "IPlayerInput.h"
 #include "Player.h"
+#include "VrInput.h"
 
 class CPlayer;
 struct SPlayerStats;
@@ -122,6 +123,7 @@ private:
 	Vec3 m_lastPos;
 
 	CPlayer* m_pPlayer;
+	VrInput* m_vrInput;
 	SPlayerStats* m_pStats;
 	uint32 m_actions;
 	uint32 m_lastActions;
