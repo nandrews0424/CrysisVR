@@ -167,7 +167,7 @@ void SCVars::InitCVars(IConsole *pConsole)
 
 	pConsole->RegisterInt("g_grabLog", 0, 0, "verbosity for grab logging (0-2)");
 
-	pConsole->Register("pl_inputAccel", &pl_inputAccel, 30.0f, 0, "Movement input acceleration");
+	pConsole->Register("pl_inputAccel", &pl_inputAccel, 25.0f, 0, "Movement input acceleration");
 
 	pConsole->RegisterInt("cl_actorsafemode", 0, VF_CHEAT, "Enable/disable actor safe mode", BroadcastChangeSafeMode);
 	pConsole->Register("h_useIK", &h_useIK, 1, 0, "Hunter uses always IK");

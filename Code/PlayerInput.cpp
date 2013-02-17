@@ -45,7 +45,7 @@ CPlayerInput::CPlayerInput( CPlayer * pPlayer ) :
 	m_lastSerializeFrameID(0)
 {
 
-	m_vrInput = new VrInput();
+	// m_vrInput = new VrInput();
 
 	m_pPlayer->RegisterPlayerEventListener(this);
 	m_pPlayer->GetGameObject()->CaptureActions(this);

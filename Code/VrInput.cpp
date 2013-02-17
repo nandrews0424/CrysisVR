@@ -8,8 +8,10 @@ IVRIOClient* _vrClient;
 VrInput::VrInput()
 {
 	_vrClient = _vrio_getInProcessClient();	
-
-
+	_vrClient->initialize();
+	
+	CryLogAlways("VR client initialized with %d channels", _vrClient->getChannelCount());
+	_initialized = true;
 }
 
 VrInput::~VrInput()

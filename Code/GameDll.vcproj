@@ -50,7 +50,7 @@
 				MinimalRebuild="true"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="0"
 				BufferSecurityCheck="true"
 				EnableFunctionLevelLinking="true"
 				ForceConformanceInForLoopScope="true"
@@ -82,7 +82,7 @@
 				LargeAddressAware="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/CrysisMod.lib"
+				ImportLibrary="$(OutDir)/CrysisVR.lib"
 				TargetMachine="1"
 			/>
 			<Tool

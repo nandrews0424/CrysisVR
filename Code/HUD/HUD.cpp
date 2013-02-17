@@ -420,9 +420,13 @@ bool CHUD::Init()
 
 	m_pHUDTweakMenu		= new CHUDTweakMenu( pScriptSystem );
 	m_pHUDCrosshair		= new CHUDCrosshair(this);
+
+	m_pHUDCrosshair->SetOpacity(0);
+
 	m_pHUDTagNames		= new CHUDTagNames;
 	m_pHUDSilhouettes	= new CHUDSilhouettes;
 
+	//tmp trying out more compiled info
 	if(gEnv->bMultiplayer)
 	{
 		m_pHUDTextChat	= new CHUDTextChat;
