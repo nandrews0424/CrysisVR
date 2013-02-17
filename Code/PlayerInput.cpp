@@ -605,7 +605,7 @@ void CPlayerInput::PreUpdate()
 	CMovementRequest request;
 	
 	Ang3 a;
-	g_vr->getHeadOrientation(a);
+	g_vr->headOrientation(a);
 	CryLogAlways("Tracker Data: %f %f %f", a.x, a.y, a.z);
 
 	// get rotation into a manageable form

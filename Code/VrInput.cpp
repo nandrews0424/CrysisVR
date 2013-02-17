@@ -21,7 +21,7 @@ VrInput::~VrInput()
 	_vrClient->dispose();
 }
 
-void VrInput::getHeadOrientation(Ang3 &angle)
+void VrInput::headOrientation(Ang3 &angle)
 {
 	VRIO_Message m;
 	angle.Set(0,0,0);
@@ -31,4 +31,34 @@ void VrInput::getHeadOrientation(Ang3 &angle)
 		_vrClient->getOrientation(HEAD, m);
 		angle.Set(m.pitch, m.yaw, m.roll);
 	}
+}
+
+bool VrInput::trackingWeapon()
+{
+	return false;
+}
+
+void VrInput::weaponOrientation(Ang3 &angle)
+{
+	angle.Set(0,0,0);
+}
+
+void VrInput::update()
+{
+
+}
+
+void VrInput::shutDown()
+{
+
+}
+
+void VrInput::calibrate()
+{
+
+}
+
+void VrInput::centerWeapon()
+{
+
 }
