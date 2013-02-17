@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Player.h"
+#include "Cry_Vector3.h"
 
 class VrInput
 {
@@ -20,6 +20,8 @@ private:
 	bool _initialized;
 
 };
+
+extern VrInput *g_vr;
 
 
 #endif 

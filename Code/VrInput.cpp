@@ -4,6 +4,7 @@
 #include "VrInput.h"
 
 IVRIOClient* _vrClient;  
+VrInput *g_vr = 0;
 
 VrInput::VrInput()
 {
@@ -11,6 +12,7 @@ VrInput::VrInput()
 	_vrClient->initialize();
 	
 	CryLogAlways("VR client initialized with %d channels", _vrClient->getChannelCount());
+	g_vr = this;
 	_initialized = true;
 }
 

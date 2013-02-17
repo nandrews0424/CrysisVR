@@ -126,6 +126,8 @@ void SCVars::InitCVars(IConsole *pConsole)
 	pConsole->AddCommand("bulletTimeMode", CmdBulletTimeMode, VF_CHEAT, "Enable bullet time mode");
 	*/
 
+	pConsole->Register("nathan_test", &dt_enable, 0, 0, "test var to tell if dll is running properly");
+
 	pConsole->Register("dt_enable", &dt_enable, 0, 0, "suit actions activated by double-tapping");
 	pConsole->Register("dt_time", &dt_time, 0.25f, 0, "time in seconds between double taps");
 	pConsole->Register("dt_meleeTime", &dt_meleeTime, 0.3f, 0, "time in seconds between double taps for melee");
