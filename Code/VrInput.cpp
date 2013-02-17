@@ -23,6 +23,12 @@ VrInput::~VrInput()
 
 void VrInput::getHeadOrientation(Ang3 &angle)
 {
+	VRIO_Message m;
 	angle.Set(0,0,0);
 
+	if (_initialized && _vrClient->getChannelCount() > 0)
+	{
+		_vrClient->getOrientation(HEAD, m);
+		angle.Set(m.pitch, m.yaw, m.roll);
+	}
 }

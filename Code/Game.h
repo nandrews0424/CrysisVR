@@ -27,6 +27,7 @@
 #include "ClientSynchedStorage.h"
 #include "ServerSynchedStorage.h"
 #include "Cry_Camera.h"
+#include "VrInput.h"
 
 #define GAME_NAME				"Crysis"
 #define GAME_LONGNAME		"Crysis"
@@ -281,6 +282,7 @@ protected:
 	CSoundMoods						*m_pSoundMoods;
 	CLaptopUtil						*m_pLaptopUtil;
 	ILCD									*m_pLCD;
+	VrInput							*m_vrInput;
 
 	typedef std::map<string, string, stl::less_stricmp<string> > TLevelMapMap;
 	TLevelMapMap m_mapNames;

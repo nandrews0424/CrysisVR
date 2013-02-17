@@ -604,6 +604,10 @@ void CPlayerInput::PreUpdate()
 {
 	CMovementRequest request;
 	
+	Ang3 a;
+	g_vr->getHeadOrientation(a);
+	CryLogAlways("Tracker Data: %f %f %f", a.x, a.y, a.z);
+
 	// get rotation into a manageable form
 	float mouseSensitivity;
 	float controllerSensitivity = 0.00333f*MAX(0.01f, g_pGameCVars->cl_controllersensitivity);

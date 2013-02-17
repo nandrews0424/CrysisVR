@@ -116,6 +116,8 @@ CGame::CGame()
 	m_pMultiplayerAM = 0;
 
 	GetISystem()->SetIGame( this );
+
+	m_vrInput = new VrInput();
 }
 
 CGame::~CGame()
@@ -138,6 +140,8 @@ CGame::~CGame()
 	g_pGame = 0;
 	g_pGameCVars = 0;
 	g_pGameActions = 0;
+
+	delete m_vrInput;
 }
 
 bool CGame::Init(IGameFramework *pFramework)
