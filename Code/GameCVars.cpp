@@ -30,6 +30,7 @@
 #include "Menus/FlashMenuObject.h"
 #include "Menus/MPHub.h"
 #include "INetworkService.h"
+#include "VrInput.h"
 
 static void BroadcastChangeSafeMode( ICVar * )
 {
@@ -933,6 +934,12 @@ void CGame::RegisterConsoleCommands()
 	m_pConsole->AddCommand("register", CmdRegisterNick, VF_CHEAT, "Register nickname with email, nickname and password");
 	m_pConsole->AddCommand("connect_crynet",CmdCryNetConnect,0,"Connect to online game server");
 	m_pConsole->AddCommand("preloadforstats","PreloadForStats()",VF_CHEAT,"Preload multiplayer assets for memory statistics.");
+	
+	// Vr related commands VrCalibrate
+	m_pConsole->AddCommand("vr_calibrate",VrCalibrate,0,"Calibrates all VR devices to their current orientation");
+
+
+
 }
 
 //------------------------------------------------------------------------
@@ -1495,4 +1502,12 @@ void CGame::CmdCryNetConnect(IConsoleCmdArgs* pArgs)
   }
   else
     GameWarning("Invalid parameters.");
+}
+
+void CGame::VrCalibrate(IConsoleCmdArgs *pArgs)
+{
+	if (!g_vr->initialized())
+		return;
+	
+	g_vr->calibrate();
 }

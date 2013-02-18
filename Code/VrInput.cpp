@@ -11,9 +11,12 @@ VrInput::VrInput()
 	_vrClient = _vrio_getInProcessClient();	
 	_vrClient->initialize();
 	
-	CryLogAlways("VR client initialized with %d channels", _vrClient->getChannelCount());
+	_headCalibration(0,0,0);
+	
+	_prevYaw = 0;
+
 	g_vr = this;
-	_initialized = true;
+	_initialized = true;	
 }
 
 VrInput::~VrInput()
@@ -31,7 +34,15 @@ void VrInput::headOrientation(Ang3 &angle)
 		_vrClient->getOrientation(HEAD, m);
 		angle.Set(m.pitch, m.yaw, m.roll);
 	}
+	
+	angle -= _headCalibration;
+	
+	// A definite shitshow, but we never calibrate on yaw so the above doesn't matter
+	float yawDelta = angle.y - _prevYaw;
+	_prevYaw = angle.y;
+	angle.y = yawDelta;
 }
+
 
 bool VrInput::trackingWeapon()
 {
@@ -43,9 +54,10 @@ void VrInput::weaponOrientation(Ang3 &angle)
 	angle.Set(0,0,0);
 }
 
-void VrInput::update()
+void VrInput::update(float yawDelta)
 {
-
+	_baseYaw+=yawDelta;
+	CryLogAlways("_baseYaw updated to: %f\n  (incr: %f)", _baseYaw, yawDelta);
 }
 
 void VrInput::shutDown()
@@ -55,6 +67,10 @@ void VrInput::shutDown()
 
 void VrInput::calibrate()
 {
+	Ang3 headAngle;
+	headOrientation(headAngle);
+	_headCalibration = Ang3(headAngle + _headCalibration);
+	_headCalibration.y;//yaw
 
 }
 

@@ -603,11 +603,7 @@ bool CPlayerInput::CanMove() const
 void CPlayerInput::PreUpdate()
 {
 	CMovementRequest request;
-	
-	Ang3 a;
-	g_vr->headOrientation(a);
-	CryLogAlways("Tracker Data: %f %f %f", a.x, a.y, a.z);
-
+		
 	// get rotation into a manageable form
 	float mouseSensitivity;
 	float controllerSensitivity = 0.00333f*MAX(0.01f, g_pGameCVars->cl_controllersensitivity);
@@ -753,6 +749,10 @@ void CPlayerInput::PreUpdate()
 
 	//if(m_pPlayer->m_stats.isOnLadder)
 		//deltaRotation.z = 0.0f;
+	
+	//TODO: VR update the delta rotations here for vr, for now only z (yaw axis) should work...
+
+
 
 	if (!animControlled)
 		request.AddDeltaRotation( deltaRotation );

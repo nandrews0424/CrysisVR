@@ -56,6 +56,7 @@ private:
 	float m_leanAmount;	  
 	float m_absRoll;
 	float	m_desiredLeanAmount;
+	float m_accumulatedYaw;
 
 	// angular impulses - from stats
 	float m_angularImpulseTime;

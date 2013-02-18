@@ -239,6 +239,9 @@ protected:
 	static void CmdRegisterNick(IConsoleCmdArgs* pArgs);
   static void CmdCryNetConnect(IConsoleCmdArgs* pArgs);
 
+	// VR related console commands
+	static void VrCalibrate(IConsoleCmdArgs *pArgs);
+
 	IGameFramework			*m_pFramework;
 	IConsole						*m_pConsole;
 

@@ -7,6 +7,7 @@
 #include "GameUtils.h"
 #include "GameCVars.h"
 #include "Item.h"
+#include "VrInput.h"
 
 #define ENABLE_NAN_CHECK
 
@@ -63,7 +64,7 @@ void CPlayerRotation::Process()
 
 	//
 	float forceLookLen2(m_player.m_stats.forceLookVector.len2());
-	if (forceLookLen2>0.001f)
+	if (forceLookLen2>0.001f && !g_vr->initialized()) // no forced look in VR please
 	{
 		float forceLookLen(cry_sqrtf(forceLookLen2));
 		Vec3 forceLook(m_player.m_stats.forceLookVector);
@@ -79,8 +80,11 @@ void CPlayerRotation::Process()
 
 	ProcessAngularImpulses();
 
-	ProcessLean();
-	
+	if(!g_vr->initialized())
+	{
+		ProcessLean();
+	}
+
 	if (m_stats.inAir && m_stats.inZeroG)
 		ProcessFlyingZeroG();
 	else if (m_stats.inFreefall.Value()==1)
@@ -89,8 +93,11 @@ void CPlayerRotation::Process()
 		ProcessParachute();
 	else
 	{
-		ProcessNormalRoll();
-		ClampAngles();
+		if(!g_vr->initialized())
+		{
+			ProcessNormalRoll();
+			ClampAngles();
+		}
 		ProcessNormal();
 	}
 
@@ -113,7 +120,7 @@ void CPlayerRotation::Process()
 	}
 	//
 
-	m_viewQuatFinal = m_viewQuat * Quat::CreateRotationXYZ(m_player.m_viewAnglesOffset);
+	m_viewQuatFinal = m_viewQuat; //TEST:  * Quat::CreateRotationXYZ(m_player.m_viewAnglesOffset);
 }
 
 void CPlayerRotation::Commit( CPlayer& player )
@@ -133,6 +140,7 @@ void CPlayerRotation::Commit( CPlayer& player )
 	player.m_linkStats.baseQuatLinked = m_baseQuatLinked.GetNormalized();
 	player.m_linkStats.viewQuatLinked = m_viewQuatLinked.GetNormalized();
 	
+
 	player.m_viewRoll = m_viewRoll;
 	player.m_upVector = m_upVector;
 	player.m_viewAnglesOffset = m_viewAnglesOffset;
@@ -572,6 +580,10 @@ void CPlayerRotation::ClampAngles()
 	}
 }
 
+
+//temp hack
+Ang3 prevAngle;
+
 void CPlayerRotation::ProcessNormal()
 {
 	m_upVector = Vec3::CreateSlerp(m_upVector,m_stats.upVector,min(5.0f*m_frameTime, 1.0f));
@@ -595,13 +607,43 @@ void CPlayerRotation::ProcessNormal()
 	CHECKQNAN_VEC(forward);
 
 	m_baseQuat = Quat(Matrix33::CreateFromVectors(forward % up,forward,up));
+	
+	
 	//CHECKQNAN_MAT33(m_baseMtx);
-	m_baseQuat *= Quat::CreateRotationZ(m_deltaAngles.z);
+
+	// todo: if this works apply the delta yaw from VR input as well...
+	//CryLogAlways("Engine Delta yaw: %f", m_deltaAngles.z);
+
+	
+	 m_baseQuat *= Quat::CreateRotationZ(m_deltaAngles.z);
 	//m_baseQuat.Normalize();
 
 	m_viewQuat = m_baseQuat * 
 		Quat::CreateRotationX(GetLocalPitch() + m_deltaAngles.x) * 
 		Quat::CreateRotationY(m_viewRoll);
+		
+
+	// Apply view data from trackers, base matrix probably includes yaw orientation already... (not totally ok but for now)
+	if (g_vr->initialized())
+	{	
+		Ang3 angle, adjAngle;
+		g_vr->headOrientation(angle);
+
+		//todo: convert from deg to rad and adjust for the different axis assignments (not a permanent home)...
+		adjAngle.x = DEG2RAD(-angle.x);//pitch is inverted here...
+		adjAngle.y = DEG2RAD(angle.z);
+		adjAngle.z = DEG2RAD(angle.y);
+
+		//CryLogAlways("Tracked Delta Yaw: %f", adjAngle.z);
+
+		// apply the tracked delta 
+		m_baseQuat *= Quat::CreateRotationZ(adjAngle.z);
+
+		m_viewQuat = m_baseQuat * 
+			Quat::CreateRotationX(adjAngle.x) * 
+			Quat::CreateRotationY(adjAngle.y);
+	}
+	
 	//m_viewQuat.Normalize();
 
 	//CHECKQNAN_MAT33(m_viewMtx);
