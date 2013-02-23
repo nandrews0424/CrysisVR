@@ -79,12 +79,8 @@ void CPlayerRotation::Process()
 	}
 
 	ProcessAngularImpulses();
-
-	if(!g_vr->initialized())
-	{
-		ProcessLean();
-	}
-
+	ProcessLean();
+	
 	if (m_stats.inAir && m_stats.inZeroG)
 		ProcessFlyingZeroG();
 	else if (m_stats.inFreefall.Value()==1)
@@ -623,25 +619,26 @@ void CPlayerRotation::ProcessNormal()
 		Quat::CreateRotationY(m_viewRoll);
 		
 
-	// Apply view data from trackers, base matrix probably includes yaw orientation already... (not totally ok but for now)
+		// Apply view data from trackers, base matrix probably includes yaw orientation already... (not totally ok but for now)
 	if (g_vr->initialized())
 	{	
-		Ang3 angle, adjAngle;
+		// base engine yaw that new read deltas should be applied onto for all tracking devices
+		float baseYaw = m_baseQuat.GetRotZ();
+		
+		g_vr->update(baseYaw);	
+
+		Ang3 angle;
+		
 		g_vr->headOrientation(angle);
 
-		//todo: convert from deg to rad and adjust for the different axis assignments (not a permanent home)...
-		adjAngle.x = DEG2RAD(-angle.x);//pitch is inverted here...
-		adjAngle.y = DEG2RAD(angle.z);
-		adjAngle.z = DEG2RAD(angle.y);
+		// apply the tracked yaw delta 
+		m_baseQuat *= Quat::CreateRotationZ(angle.z - baseYaw);
 
-		//CryLogAlways("Tracked Delta Yaw: %f", adjAngle.z);
-
-		// apply the tracked delta 
-		m_baseQuat *= Quat::CreateRotationZ(adjAngle.z);
-
+		float baseYawAfter = m_baseQuat.GetRotZ();
+		
 		m_viewQuat = m_baseQuat * 
-			Quat::CreateRotationX(adjAngle.x) * 
-			Quat::CreateRotationY(adjAngle.y);
+			Quat::CreateRotationX(angle.x) * 
+			Quat::CreateRotationY(angle.y);
 	}
 	
 	//m_viewQuat.Normalize();
@@ -665,7 +662,30 @@ void CPlayerRotation::ProcessLean()
 		else if(fabsf(m_desiredLeanAmount) > 0.01f)
 			leanAmt = m_desiredLeanAmount;
 	}
+	
+	
+	// head offset model for leaning and for forward tilting based on tracker info...
+	if (g_vr->initialized())
+	{	
+		Ang3 tmp;
+		g_vr->headOrientation(tmp);
+		float headRoll = RAD2DEG(tmp.y);
 
+		if ( headRoll > 180.f ) //handle wrap around
+		{
+			headRoll = -360.f + headRoll;
+		}
+		else if ( headRoll < -180.f )
+		{
+			headRoll = 360 + headRoll;
+		}
+
+		leanAmt = headRoll / 45.f;
+
+		// CryLogAlways("Head Roll: %f Lean: %f", headRoll, leanAmt);
+
+	}
+			
 	EStance stance = m_player.GetStance();
 	if (stance == STANCE_PRONE)
 		leanAmt *= 0.65f;

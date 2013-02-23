@@ -1375,6 +1375,16 @@ void CPlayerMovementController::UpdateMovementState( SMovementState& state )
 		state.weaponPosition = state.eyePosition;
 		state.fireDirection = state.aimDirection = state.eyeDirection;
 		state.fireTarget = m_fireTarget;
+
+		// VR WEAPON TRACKING
+		if (m_pPlayer->IsClient() && g_vr->initialized() && g_vr->trackingWeapon()) 
+		{
+			Ang3 angle;
+			g_vr->weaponOrientation(angle);
+
+			Quat weapQuat = Quat::CreateRotationXYZ(angle);
+			state.fireDirection = state.aimDirection = weapQuat.GetColumn1();
+		} 
 	}
 	else
 	{
@@ -1567,6 +1577,10 @@ bool CPlayerMovementController::GetStanceState( EStance stance, float lean, bool
 		state.fireDirection = state.aimDirection;
 		state.bodyDirection = forward;
 	}
+
+	// VR TODO: maybe hooks here work? would be nice...
+
+
 
 	return true;
 }

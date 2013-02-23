@@ -12,8 +12,12 @@ VrInput::VrInput()
 	_vrClient->initialize();
 	
 	_headCalibration(0,0,0);
+	_weaponCalibration(0,0,0);
 	
 	_prevYaw = 0;
+	_prevWeaponYaw = 0;
+	_accumulatedHeadYaw = 0;
+	_accumulatedWeaponYaw = 0;
 
 	g_vr = this;
 	_initialized = true;	
@@ -21,60 +25,94 @@ VrInput::VrInput()
 
 VrInput::~VrInput()
 {
-	_vrClient->dispose();
+	shutDown();
 }
 
 void VrInput::headOrientation(Ang3 &angle)
 {
-	VRIO_Message m;
-	angle.Set(0,0,0);
-
-	if (_initialized && _vrClient->getChannelCount() > 0)
-	{
-		_vrClient->getOrientation(HEAD, m);
-		angle.Set(m.pitch, m.yaw, m.roll);
-	}
-	
-	angle -= _headCalibration;
-	
-	// A definite shitshow, but we never calibrate on yaw so the above doesn't matter
-	float yawDelta = angle.y - _prevYaw;
-	_prevYaw = angle.y;
-	angle.y = yawDelta;
+	angle.Set(DEG2RAD(-_headAngle.x), DEG2RAD(_headAngle.z), DEG2RAD(_headAngle.y));
 }
 
 
+float VrInput::headRoll()
+{
+	// THIS IS NEVER USED ANY MORE..... 
+	return -99999999;
+}
+
 bool VrInput::trackingWeapon()
 {
-	return false;
+	return _vrClient->getChannelCount() > 1;
 }
 
 void VrInput::weaponOrientation(Ang3 &angle)
 {
-	angle.Set(0,0,0);
+	// Reorienting to engine standards for angles
+	angle.Set(DEG2RAD(-_weaponAngle.x), DEG2RAD(_weaponAngle.z), DEG2RAD(_weaponAngle.y));
 }
 
-void VrInput::update(float yawDelta)
+void VrInput::update(float baseEngineYaw)
 {
-	_baseYaw+=yawDelta;
-	CryLogAlways("_baseYaw updated to: %f\n  (incr: %f)", _baseYaw, yawDelta);
+	VRIO_Message m;
+	_headAngle.Set(0,0,0);
+
+	// everything in the backend is currently using degrees.
+	baseEngineYaw = RAD2DEG(baseEngineYaw);
+
+	if (!_initialized || _vrClient->getChannelCount() == 0)
+		return;
+	
+	// HEAD ANGLES
+	_vrClient->getOrientation(HEAD, m);
+	_headAngle.Set(m.pitch, m.yaw, m.roll);
+	
+	float deltaYaw = _headAngle.y - _prevYaw;
+	_prevYaw = _headAngle.y;
+	_accumulatedHeadYaw += deltaYaw;
+	_headAngle.y = deltaYaw + baseEngineYaw;
+
+	_headAngle -= _headCalibration;
+	
+	//WEAPON ANGLES
+	if (!trackingWeapon())
+		return;
+
+	_vrClient->getOrientation(WEAPON, m);
+	_weaponAngle.Set(m.pitch, m.yaw, m.roll);
+	
+	deltaYaw = _weaponAngle.y - _prevWeaponYaw;
+	_prevWeaponYaw = _weaponAngle.y;
+	_accumulatedWeaponYaw += deltaYaw;
+	
+	_weaponAngle.y = (baseEngineYaw - _accumulatedHeadYaw) + _accumulatedWeaponYaw;
+
+	// CryLogAlways("weapon yaw: %f = baseyaw: %f - accumheadyaw: %f + accumweaponyaw: %f", _weaponAngle.y, baseEngineYaw, _accumulatedHeadYaw, _accumulatedWeaponYaw);
+
+	_weaponAngle -= _weaponCalibration;
+
+	_prevEngineYaw = baseEngineYaw;
 }
 
 void VrInput::shutDown()
 {
-
+	if (_initialized)
+		_vrClient->dispose();
 }
 
 void VrInput::calibrate()
 {
-	Ang3 headAngle;
-	headOrientation(headAngle);
-	_headCalibration = Ang3(headAngle + _headCalibration);
-	_headCalibration.y;//yaw
-
+	_headCalibration = Ang3(_headAngle + _headCalibration);
+	_headCalibration.y = 0; // no head yaw calibration
+	_weaponCalibration = Ang3(_weaponAngle + _weaponCalibration);
+	centerWeapon();
 }
 
 void VrInput::centerWeapon()
 {
+		
+	VRIO_Message head, weapon;
+	_vrClient->getOrientation(HEAD, head);
+	_vrClient->getOrientation(WEAPON, weapon);
 
+	_weaponCalibration.y = weapon.yaw - head.yaw;
 }

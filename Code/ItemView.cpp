@@ -196,7 +196,7 @@ bool CItem::IsCurrentItem()
 	if (pOwner->GetCurrentItem() == this)
 		return true;
 
-	return false;
+	return false;  
 }
 
 //------------------------------------------------------------------------

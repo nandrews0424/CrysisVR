@@ -14,6 +14,7 @@ public:
 	~VrInput(void);
 
 	void headOrientation(Ang3 &angle);
+	float	headRoll();
 	void weaponOrientation(Ang3 &angle);
 	void update(float yawDelta);
 	void shutDown();
@@ -26,6 +27,10 @@ public:
 private:
 	bool	_initialized;
 	float	_prevYaw;
+	float	_prevEngineYaw;
+	float	_prevWeaponYaw;
+	float	_accumulatedHeadYaw;
+	float	_accumulatedWeaponYaw;
 	float	_totalAccumulatedYaw[10];
 
 	float	_baseYaw; //accumulated engine yaw deltas from other inputs...

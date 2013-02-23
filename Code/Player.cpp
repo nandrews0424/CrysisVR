@@ -1673,7 +1673,16 @@ void CPlayer::PostUpdateView(SViewParams &viewParams)
 	wQuat *= Quat::CreateSlerp(viewParams.currentShakeQuat,IDENTITY,0.5f);
 	wQuat.Normalize();
 
-	m_stats.FPWeaponAngles = Ang3(wQuat);	
+	m_stats.FPWeaponAngles = Ang3(wQuat);
+	
+	// If actually tracking the weapon, set up the fp angles for view models etc
+	if (g_vr->initialized() && g_vr->trackingWeapon())
+	{
+		// potentially update the position w/ offsets
+		g_vr->weaponOrientation(m_stats.FPWeaponAngles);
+	}
+		
+
 	m_stats.FPSecWeaponPos = m_stats.FPWeaponPos;
 	m_stats.FPSecWeaponAngles = m_stats.FPWeaponAngles;
 
