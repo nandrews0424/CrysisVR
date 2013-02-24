@@ -86,7 +86,7 @@ void VrInput::update(float baseEngineYaw)
 	
 	_weaponAngle.y = (baseEngineYaw - _accumulatedHeadYaw) + _accumulatedWeaponYaw;
 
-	CryLogAlways("weapon yaw: %f - calibration %f  base yaw: %f", _weaponAngle.y, _weaponCalibration.y, baseEngineYaw);
+	// CryLogAlways("weapon yaw: %f - calibration %f  base yaw: %f", _weaponAngle.y, _weaponCalibration.y, baseEngineYaw);
 
 	_weaponAngle -= _weaponCalibration;
 

@@ -800,7 +800,20 @@ void CLam::UpdateFPLaser(float frameTime, CItem* parent)
 	{
 		// Lam Light
 		lamPos = parent->GetSlotHelperPos(eIGS_FirstPerson,m_laserHelperFP.c_str(),true);
+
 		Quat   lamRot = Quat(parent->GetSlotHelperRotation(eIGS_FirstPerson,m_laserHelperFP.c_str(),true));
+		
+		// VR flashlight override to use tracked weapon directions
+		if(CItem* pItem = static_cast<CItem*>(m_pItemSystem->GetItem(GetParentId())))
+		{
+			if(pItem->GetOwnerActor() && pItem->GetOwnerActor()->IsPlayer() && g_vr->initialized() && g_vr->trackingWeapon())
+			{
+				Ang3 weapAngle;
+				g_vr->weaponOrientation(weapAngle);
+				lamRot = Quat::CreateRotationXYZ(weapAngle);
+			}
+		}
+		
 		dir = lamRot.GetColumn1();
 	}
 
@@ -918,7 +931,16 @@ void CLam::AdjustLaserFPDirection(CItem* parent, Vec3 &dir, Vec3 &pos)
 	
 		CCamera& camera = gEnv->pSystem->GetViewCamera();
 		pos = camera.GetPosition();
+
 		dir = camera.GetMatrix().GetColumn1();
+
+		if (pActor->IsClient() && g_vr->initialized() && g_vr->trackingWeapon()) 
+		{
+			Ang3 weapAngle;
+			g_vr->weaponOrientation(weapAngle);
+			dir = Quat::CreateRotationXYZ(weapAngle).GetColumn1();
+		}
+
 		dir.Normalize();
 	}
 }
