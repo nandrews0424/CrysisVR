@@ -617,10 +617,12 @@ void CPlayerRotation::ProcessNormal()
 	m_viewQuat = m_baseQuat * 
 		Quat::CreateRotationX(GetLocalPitch() + m_deltaAngles.x) * 
 		Quat::CreateRotationY(m_viewRoll);
-		
 
-		// Apply view data from trackers, base matrix probably includes yaw orientation already... (not totally ok but for now)
-	if (g_vr->initialized())
+
+	
+
+	// Apply view data from trackers, base matrix probably includes yaw orientation already... (not totally ok but for now)
+	if (m_player.IsClient() && g_vr->initialized())
 	{	
 		// base engine yaw that new read deltas should be applied onto for all tracking devices
 		float baseYaw = m_baseQuat.GetRotZ();
@@ -665,7 +667,7 @@ void CPlayerRotation::ProcessLean()
 	
 	
 	// head offset model for leaning and for forward tilting based on tracker info...
-	if (g_vr->initialized())
+	if (m_player.IsClient() && g_vr->initialized())
 	{	
 		Ang3 tmp;
 		g_vr->headOrientation(tmp);
