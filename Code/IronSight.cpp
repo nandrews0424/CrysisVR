@@ -703,6 +703,9 @@ void CIronSight::OnZoomedIn()
 	m_swayCycle = 0.0f;
 	m_lastRecoil = 0.0f;
 
+
+	// VR Weapon Tracking adjustment for iron sight
+
 	m_pWeapon->SetFPWeapon(0.45f,true);
 }
 

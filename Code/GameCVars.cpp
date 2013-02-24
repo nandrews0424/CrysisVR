@@ -937,6 +937,7 @@ void CGame::RegisterConsoleCommands()
 	
 	// Vr related commands VrCalibrate
 	m_pConsole->AddCommand("vr_calibrate",VrCalibrate,0,"Calibrates all VR devices to their current orientation");
+	m_pConsole->AddCommand("vr_center_weapon",VrCenterWeapon,0,"Recenters the weapon yaw to the current head yaw for independent weapon tracking");
 
 
 
@@ -1510,4 +1511,12 @@ void CGame::VrCalibrate(IConsoleCmdArgs *pArgs)
 		return;
 	
 	g_vr->calibrate();
+}
+
+void CGame::VrCenterWeapon(IConsoleCmdArgs *pArgs)
+{
+	if (!g_vr->initialized())
+		return;
+	
+	g_vr->centerWeapon();
 }

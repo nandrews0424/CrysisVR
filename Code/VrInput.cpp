@@ -48,7 +48,7 @@ bool VrInput::trackingWeapon()
 void VrInput::weaponOrientation(Ang3 &angle)
 {
 	// Reorienting to engine standards for angles
-	angle.Set(DEG2RAD(-_weaponAngle.x), DEG2RAD(_weaponAngle.z), DEG2RAD(_weaponAngle.y));
+	angle.Set(DEG2RAD(-_weaponAngle.z), DEG2RAD(-_weaponAngle.x), DEG2RAD(_weaponAngle.y));
 }
 
 void VrInput::update(float baseEngineYaw)
